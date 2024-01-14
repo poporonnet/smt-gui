@@ -72,18 +72,6 @@
     overflow-x: hidden;
 }
 
-.add-button {
-    position: absolute;
-    bottom: 0.75rem;
-}
-
-[dir="ltr"] .add-button {
-    right: 1rem;
-}
-
-[dir="rtl"] .add-button {
-    left: 1rem;
-}
 
 .raised {
     background-color: $drop-highlight;

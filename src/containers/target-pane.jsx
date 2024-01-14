@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 import {intlShape, injectIntl} from 'react-intl';
 
 import {
-    openSpriteLibrary,
     closeSpriteLibrary
 } from '../reducers/modals';
 import {activateTab, COSTUMES_TAB_INDEX, BLOCKS_TAB_INDEX} from '../reducers/editor-tab';
@@ -250,7 +249,6 @@ class TargetPane extends React.Component {
         return (
             <TargetPaneComponent
                 {...componentProps}
-                fileInputRef={this.setFileInput}
                 onActivateBlocksTab={this.handleActivateBlocksTab}
                 onChangeSpriteDirection={this.handleChangeSpriteDirection}
                 onChangeSpriteName={this.handleChangeSpriteName}
@@ -263,11 +261,7 @@ class TargetPane extends React.Component {
                 onDrop={this.handleDrop}
                 onDuplicateSprite={this.handleDuplicateSprite}
                 onExportSprite={this.handleExportSprite}
-                onFileUploadClick={this.handleFileUploadClick}
-                onPaintSpriteClick={this.handlePaintSpriteClick}
                 onSelectSprite={this.handleSelectSprite}
-                onSpriteUpload={this.handleSpriteUpload}
-                onSurpriseSpriteClick={this.handleSurpriseSpriteClick}
             />
         );
     }
@@ -298,10 +292,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    onNewSpriteClick: e => {
-        e.preventDefault();
-        dispatch(openSpriteLibrary());
-    },
     onRequestCloseSpriteLibrary: () => {
         dispatch(closeSpriteLibrary());
     },

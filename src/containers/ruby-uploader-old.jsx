@@ -39,7 +39,7 @@ class RubyUploaderOld extends React.Component {
 	//targets.splice(1, 1);
 	const targets2 = targets.splice(1,2);
 	const slave_code = RubyGenerator.targetsToCode(targets2, options);
-	
+
 	/*
         const idToTarget = {};
         this.props.vm.runtime.targets.forEach(target => {
@@ -80,7 +80,7 @@ class RubyUploaderOld extends React.Component {
         // console.log(`master: ${base64MasterCode}`);
         console.log("master: " + master_code);
         console.log("slave:  " + slave_code );
-	
+
         // 送信
 	var ele = document.createElement('form');
 	ele.action = 'https://www.epi.it.matsue-ct.jp/j1819/convert/upload.php';
@@ -98,7 +98,7 @@ class RubyUploaderOld extends React.Component {
 	ele.appendChild(q);
 	ele.appendChild(r);
 	document.body.appendChild(ele);
-	
+
 	ele.submit();
 	ele.remove();
 

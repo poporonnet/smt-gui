@@ -729,9 +729,13 @@ class MenuBar extends React.Component {
                     </div>
                     <Divider className={classNames(styles.divider)} />
                     <div className={styles.fileGroup}>
-                            <span><a href="https://www.shimane-oss.org/kani-robo/" target="_blank" rel="noopener noreferrer">
-				      <font color="white">🦀kani-robo</font>
-                            </a></span>
+                        <span><a
+                            href="https://www.shimane-oss.org/kani-robo/"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <p>🦀kani-robo</p>
+                        </a></span>
                     </div>
                 </div>
 
