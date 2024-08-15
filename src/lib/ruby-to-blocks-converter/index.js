@@ -1,5 +1,5 @@
 /* global Opal */
-import {defineMessages} from 'react-intl';
+import { defineMessages } from 'react-intl';
 import _ from 'lodash';
 import log from '../log';
 import Blockly from 'scratch-blocks';
@@ -7,7 +7,7 @@ import RubyParser from '../ruby-parser';
 import Variable from 'scratch-vm/src/engine/variable';
 
 import Primitive from './primitive';
-import {RubyToBlocksConverterError} from './errors';
+import { RubyToBlocksConverterError } from './errors';
 
 // import MotionConverter from './motion';
 // import LooksConverter from './looks';
@@ -32,6 +32,8 @@ import MyBlocksConverter from './my-blocks';
 // import MakeyMakeyConverter from './makeymakey';
 // import VideoConverter from './video';
 // import Text2SpeechConverter from './text2speech';
+import ToolsConverter from './tools';
+import Kanirobo2Converter from './kanirobo2';
 
 const messages = defineMessages({
     couldNotConvertPremitive: {
@@ -79,21 +81,21 @@ const getExtensionIdForOpcode = function (opcode) {
  * Class for a block converter that translates ruby code into the blocks.
  */
 class RubyToBlocksConverter {
-    constructor (vm) {
+    constructor(vm) {
         this.vm = vm;
         this._translator = message => message.defaultMessage;
         this._converters = [
-        // MusicConverter,
-        // PenConverter,
-        // EV3Converter,
-        // GdxForConverter,
-        // SmalrubotS1Converter,
-        // BoostConverter,
-        // TranslateConverter,
-        // MakeyMakeyConverter,
-        // MotionConverter,
-        // LooksConverter,
-        // SoundConverter,
+            // MusicConverter,
+            // PenConverter,
+            // EV3Converter,
+            // GdxForConverter,
+            // SmalrubotS1Converter,
+            // BoostConverter,
+            // TranslateConverter,
+            // MakeyMakeyConverter,
+            // MotionConverter,
+            // LooksConverter,
+            // SoundConverter,
             ControlConverter,
             // SensingConverter,
             OperatorsConverter,
@@ -105,41 +107,43 @@ class RubyToBlocksConverter {
 
         [
             // EventConverter,
-            ControlConverter
+            ControlConverter,
             // MicroBitConverter,
             // VideoConverter,
             // Text2SpeechConverter,
             // Wedo2Converter,
             // MicrobitMoreConverter,
-            // MeshConverter
+            // MeshConverter,
+            ToolsConverter,
+            Kanirobo2Converter
         ].forEach(x => x.register(this));
     }
 
-    get errors () {
+    get errors() {
         return this._context.errors;
     }
 
-    get blocks () {
+    get blocks() {
         return this._context.blocks;
     }
 
-    get variables () {
+    get variables() {
         return this._context.variables;
     }
 
-    get lists () {
+    get lists() {
         return this._context.lists;
     }
 
-    get broadcastMsgs () {
+    get broadcastMsgs() {
         return this._context.broadcastMsgs;
     }
 
-    setTranslatorFunction (translator) {
+    setTranslatorFunction(translator) {
         this._translator = translator;
     }
 
-    reset () {
+    reset() {
         this._context = {
             currentNode: null,
             errors: [],
@@ -160,7 +164,7 @@ class RubyToBlocksConverter {
         }
     }
 
-    targetCodeToBlocks (target, code) {
+    targetCodeToBlocks(target, code) {
         this.reset();
         this._setTarget(target);
         this._loadVariables(target);
@@ -181,7 +185,7 @@ class RubyToBlocksConverter {
                         block.node,
                         this._translator(
                             messages.couldNotConvertPremitive,
-                            {SOURCE: this._getSource(block.node)}
+                            { SOURCE: this._getSource(block.node) }
                         )
                     );
                 } else {
@@ -195,7 +199,7 @@ class RubyToBlocksConverter {
                         block.node,
                         this._translator(
                             messages.wrongInstruction,
-                            {SOURCE: this._getSource(block.node)}
+                            { SOURCE: this._getSource(block.node) }
                         )
                     );
                 }
@@ -229,7 +233,7 @@ class RubyToBlocksConverter {
         }
     }
 
-    applyTargetBlocks (target) {
+    applyTargetBlocks(target) {
         let stage;
         if (target.isStage) {
             stage = target;
@@ -278,7 +282,7 @@ class RubyToBlocksConverter {
         });
     }
 
-    registerCallMethodWithBlock (receiverName, name, numArgs, numRubyBlockArgs, createBlockFunc) {
+    registerCallMethodWithBlock(receiverName, name, numArgs, numRubyBlockArgs, createBlockFunc) {
         if (receiverName === 'self') {
             this.registerCallMethodWithBlock('sprite', name, numArgs, numRubyBlockArgs, createBlockFunc);
             this.registerCallMethodWithBlock('stage', name, numArgs, numRubyBlockArgs, createBlockFunc);
@@ -301,11 +305,11 @@ class RubyToBlocksConverter {
         createBlockFuncs.push(createBlockFunc);
     }
 
-    registerCallMethod (receiverName, name, numArgs, createBlockFunc) {
+    registerCallMethod(receiverName, name, numArgs, createBlockFunc) {
         this.registerCallMethodWithBlock(receiverName, name, numArgs, 'none', createBlockFunc);
     }
 
-    callMethod (receiver, name, args, rubyBlockArgs, rubyBlock, node) {
+    callMethod(receiver, name, args, rubyBlockArgs, rubyBlock, node) {
         const receiverName = this._getReceiverName(receiver);
         if (!receiverName) return null;
 
@@ -341,7 +345,7 @@ class RubyToBlocksConverter {
         return null;
     }
 
-    _getReceiverName (receiver) {
+    _getReceiverName(receiver) {
         if (this._isSelf(receiver) || receiver === Opal.nil) {
             if (this._context.target && this._context.target.isStage) {
                 return 'stage';
@@ -357,15 +361,15 @@ class RubyToBlocksConverter {
         return null;
     }
 
-    createBlock (opcode, type, attributes = {}) {
+    createBlock(opcode, type, attributes = {}) {
         return this._createBlock(opcode, type, attributes);
     }
 
-    setParent (block, parent) {
+    setParent(block, parent) {
         return this._setParent(block, parent);
     }
 
-    _callConvertersHandler (handlerName, ...args) {
+    _callConvertersHandler(handlerName, ...args) {
         for (let i = 0; i < this._converters.length; i++) {
             const converter = this._converters[i];
             if (converter.hasOwnProperty(handlerName)) {
@@ -378,7 +382,7 @@ class RubyToBlocksConverter {
         return null;
     }
 
-    _saveContext () {
+    _saveContext() {
         const includes = [
             'blocks',
             'blockTypes',
@@ -398,7 +402,7 @@ class RubyToBlocksConverter {
     }
 
     // could not restore attributes.
-    _restoreContext (saved) {
+    _restoreContext(saved) {
         if (!saved) {
             return;
         }
@@ -419,11 +423,11 @@ class RubyToBlocksConverter {
         });
     }
 
-    _setTarget (target) {
+    _setTarget(target) {
         this._context.target = target;
     }
 
-    _loadVariables (target) {
+    _loadVariables(target) {
         if (!target || !target.variables) {
             return;
         }
@@ -449,7 +453,7 @@ class RubyToBlocksConverter {
         });
     }
 
-    _toErrorAnnotation (row, column, message, source) {
+    _toErrorAnnotation(row, column, message, source) {
         if (row === Opal.nil) {
             row = 0;
         } else {
@@ -467,7 +471,7 @@ class RubyToBlocksConverter {
         };
     }
 
-    _checkNumChildren (node, length) {
+    _checkNumChildren(node, length) {
         if (_.isArray(length)) {
             if (length.indexOf(node.children.length) < 0) {
                 log.error(`'${node.type}' node.children.length !== ${length.join(' or ')}: `, node.children);
@@ -477,51 +481,51 @@ class RubyToBlocksConverter {
         }
     }
 
-    _isSelf (block) {
+    _isSelf(block) {
         return block instanceof Primitive && block.type === 'self';
     }
 
-    isString (value) {
+    isString(value) {
         return this._isString(value);
     }
 
-    _isString (value) {
+    _isString(value) {
         return _.isString(value) || (value && value.type === 'str');
     }
 
-    isNumber (value) {
+    isNumber(value) {
         return this._isNumber(value);
     }
 
-    _isNumber (value) {
+    _isNumber(value) {
         return _.isNumber(value) || (value && (value.type === 'int' || value.type === 'float'));
     }
 
-    _isTrue (value) {
+    _isTrue(value) {
         return value === true || (value && value.type === 'true');
     }
 
-    _isFalse (value) {
+    _isFalse(value) {
         return value === false || (value && value.type === 'false');
     }
 
-    _isArray (value) {
+    _isArray(value) {
         return _.isArray(value) || (value && value.type === 'array');
     }
 
-    _isHash (value) {
+    _isHash(value) {
         return value && value.type === 'hash';
     }
 
-    _isConst (value) {
+    _isConst(value) {
         return value && value.type === 'const';
     }
 
-    isBlock (block) {
+    isBlock(block) {
         return this._isBlock(block);
     }
 
-    _isBlock (block) {
+    _isBlock(block) {
         try {
             return block.hasOwnProperty('opcode');
         } catch (e) {
@@ -529,43 +533,43 @@ class RubyToBlocksConverter {
         }
     }
 
-    _isStatementBlock (block) {
+    _isStatementBlock(block) {
         const blockType = this._getBlockType(block);
         return blockType === 'statement' || blockType === 'terminate';
     }
 
-    _isValueBlock (block) {
+    _isValueBlock(block) {
         if (!this._isBlock(block)) {
             return false;
         }
         return /^value/.test(this._getBlockType(block));
     }
 
-    isNumberOrBlock (numberOrBlock) {
+    isNumberOrBlock(numberOrBlock) {
         return this._isNumberOrBlock(numberOrBlock);
     }
 
-    _isNumberOrBlock (numberOrBlock) {
+    _isNumberOrBlock(numberOrBlock) {
         return this._isNumber(numberOrBlock) || this._isValueBlock(numberOrBlock);
     }
 
-    isStringOrBlock (stringOrBlock) {
+    isStringOrBlock(stringOrBlock) {
         return this._isStringOrBlock(stringOrBlock);
     }
 
-    _isStringOrBlock (stringOrBlock) {
+    _isStringOrBlock(stringOrBlock) {
         return this._isString(stringOrBlock) || this._isValueBlock(stringOrBlock);
     }
 
-    _isNumberOrStringOrBlock (block) {
+    _isNumberOrStringOrBlock(block) {
         return this._isNumber(block) || this._isString(block) || this._isValueBlock(block);
     }
 
-    _isColorOrBlock (colorOrBlock) {
+    _isColorOrBlock(colorOrBlock) {
         return this._isBlock(colorOrBlock) || (this._isString(colorOrBlock) && ColorRegexp.test(colorOrBlock));
     }
 
-    _isFalseOrBooleanBlock (block) {
+    _isFalseOrBooleanBlock(block) {
         if (this._isFalse(block)) {
             return true;
         }
@@ -586,15 +590,15 @@ class RubyToBlocksConverter {
         return false;
     }
 
-    _isVariableBlock (block) {
+    _isVariableBlock(block) {
         return /_variable$/.test(this._getBlockType(block));
     }
 
-    _isRubyExpression (block) {
+    _isRubyExpression(block) {
         return this._isBlock(block) && block.opcode === 'ruby_expression';
     }
 
-    _getRubyExpression (block) {
+    _getRubyExpression(block) {
         if (this._isRubyExpression(block)) {
             const textBlock = this._context.blocks[block.inputs.EXPRESSION.block];
             return textBlock.fields.TEXT.value;
@@ -602,15 +606,15 @@ class RubyToBlocksConverter {
         return null;
     }
 
-    _isRubyStatement (block) {
+    _isRubyStatement(block) {
         return this._isBlock(block) && block.opcode === 'ruby_statement';
     }
 
-    _isRubyBlock (block) {
+    _isRubyBlock(block) {
         return this._isBlock(block) && block.opcode.match(/^ruby_/);
     }
 
-    _getRubyStatement (block) {
+    _getRubyStatement(block) {
         if (this._isRubyStatement(block)) {
             const textBlock = this._context.blocks[block.inputs.STATEMENT.block];
             return textBlock.fields.TEXT.value;
@@ -618,7 +622,7 @@ class RubyToBlocksConverter {
         return null;
     }
 
-    _createBlock (opcode, type, attributes = {}) {
+    _createBlock(opcode, type, attributes = {}) {
         const block = Object.assign({
             id: Blockly.utils.genUid(),
             opcode: opcode,
@@ -636,7 +640,7 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _createFieldBlock (opcode, fieldName, value) {
+    _createFieldBlock(opcode, fieldName, value) {
         if (this._isBlock(value)) {
             return value;
         }
@@ -652,47 +656,47 @@ class RubyToBlocksConverter {
         });
     }
 
-    createTextBlock (value) {
+    createTextBlock(value) {
         return this._createTextBlock(value);
     }
 
-    _createTextBlock (value) {
+    _createTextBlock(value) {
         if (this._isString(value)) {
             return this._createFieldBlock('text', 'TEXT', value.toString());
         }
         return value;
     }
 
-    _createNumberBlock (opcode, value) {
+    _createNumberBlock(opcode, value) {
         if (this._isNumber(value) || value === '') {
             return this._createFieldBlock(opcode, 'NUM', value.toString());
         }
         return value;
     }
 
-    createRubyExpressionBlock (expression, node) {
+    createRubyExpressionBlock(expression, node) {
         return this._createRubyExpressionBlock(expression, node);
     }
 
-    _createRubyExpressionBlock (expression, node) {
+    _createRubyExpressionBlock(expression, node) {
         const block = this._createBlock('ruby_expression', 'value_boolean');
         block.node = node;
         this._addInput(block, 'EXPRESSION', this._createTextBlock(expression));
         return block;
     }
 
-    _createRubyStatementBlock (statement, node) {
+    _createRubyStatementBlock(statement, node) {
         const block = this._createBlock('ruby_statement', 'statement');
         block.node = node;
         this._addInput(block, 'STATEMENT', this._createTextBlock(statement));
         return block;
     }
 
-    addField (block, name, value, attributes = {}) {
+    addField(block, name, value, attributes = {}) {
         return this._addField(block, name, value, attributes);
     }
 
-    _addField (block, name, value, attributes = {}) {
+    _addField(block, name, value, attributes = {}) {
         if (!this._isBlock(block)) {
             return;
         }
@@ -702,11 +706,11 @@ class RubyToBlocksConverter {
         }, attributes);
     }
 
-    addInput (block, name, inputBlock, shadowBlock) {
+    addInput(block, name, inputBlock, shadowBlock) {
         return this._addInput(block, name, inputBlock, shadowBlock);
     }
 
-    _addInput (block, name, inputBlock, shadowBlock) {
+    _addInput(block, name, inputBlock, shadowBlock) {
         if (!name) {
             name = inputBlock.id;
         }
@@ -725,11 +729,11 @@ class RubyToBlocksConverter {
         };
     }
 
-    addNumberInput (block, name, opcode, inputValue, shadowValue) {
+    addNumberInput(block, name, opcode, inputValue, shadowValue) {
         return this._addNumberInput(block, name, opcode, inputValue, shadowValue);
     }
 
-    _addNumberInput (block, name, opcode, inputValue, shadowValue) {
+    _addNumberInput(block, name, opcode, inputValue, shadowValue) {
         let shadowBlock;
         if (!this._isNumber(inputValue)) {
             shadowBlock = this._createNumberBlock(opcode, shadowValue);
@@ -737,7 +741,7 @@ class RubyToBlocksConverter {
         this._addInput(block, name, this._createNumberBlock(opcode, inputValue), shadowBlock);
     }
 
-    _addNoteInput (block, name, inputValue, shadowValue) {
+    _addNoteInput(block, name, inputValue, shadowValue) {
         let shadowBlock;
         const opcode = 'note';
         if (!this._isNumber(inputValue)) {
@@ -746,18 +750,18 @@ class RubyToBlocksConverter {
         this._addInput(block, name, this._createNoteBlock(opcode, inputValue), shadowBlock);
     }
 
-    _createNoteBlock (opcode, value) {
+    _createNoteBlock(opcode, value) {
         if (this._isNumber(value) || value === '') {
             return this._createFieldBlock(opcode, 'NOTE', value.toString());
         }
         return value;
     }
 
-    addTextInput (block, name, inputValue, shadowValue) {
+    addTextInput(block, name, inputValue, shadowValue) {
         return this._addTextInput(block, name, inputValue, shadowValue);
     }
 
-    _addTextInput (block, name, inputValue, shadowValue) {
+    _addTextInput(block, name, inputValue, shadowValue) {
         let shadowBlock;
         if (!this._isString(inputValue)) {
             shadowBlock = this._createTextBlock(shadowValue);
@@ -765,11 +769,11 @@ class RubyToBlocksConverter {
         this._addInput(block, name, this._createTextBlock(inputValue), shadowBlock);
     }
 
-    addFieldInput (block, name, opcode, fieldName, inputValue, shadowValue) {
+    addFieldInput(block, name, opcode, fieldName, inputValue, shadowValue) {
         return this._addFieldInput(block, name, opcode, fieldName, inputValue, shadowValue);
     }
 
-    _addFieldInput (block, name, opcode, fieldName, inputValue, shadowValue) {
+    _addFieldInput(block, name, opcode, fieldName, inputValue, shadowValue) {
         let shadowBlock;
         if (!this._isString(inputValue)) {
             shadowBlock = this._createFieldBlock(opcode, fieldName, shadowValue);
@@ -777,7 +781,7 @@ class RubyToBlocksConverter {
         this._addInput(block, name, this._createFieldBlock(opcode, fieldName, inputValue), shadowBlock);
     }
 
-    _addSubstack (block, substackBlock, num = 1) {
+    _addSubstack(block, substackBlock, num = 1) {
         let name = 'SUBSTACK';
         if (num > 1) {
             name = `${name}${num}`;
@@ -794,7 +798,7 @@ class RubyToBlocksConverter {
         };
     }
 
-    _lookupOrCreateVariableOrList (name, type) {
+    _lookupOrCreateVariableOrList(name, type) {
         name = name.toString();
         let scope;
         let varName;
@@ -831,19 +835,19 @@ class RubyToBlocksConverter {
         return variable;
     }
 
-    _lookupOrCreateVariable (name) {
+    _lookupOrCreateVariable(name) {
         return this._lookupOrCreateVariableOrList(name, Variable.SCALAR_TYPE);
     }
 
-    _lookupOrCreateList (name) {
+    _lookupOrCreateList(name) {
         return this._lookupOrCreateVariableOrList(name, Variable.LIST_TYPE);
     }
 
-    lookupOrCreateBroadcastMsg (name) {
+    lookupOrCreateBroadcastMsg(name) {
         return this._lookupOrCreateBroadcastMsg(name);
     }
 
-    _lookupOrCreateBroadcastMsg (name) {
+    _lookupOrCreateBroadcastMsg(name) {
         name = name.toString();
         const key = name.toLowerCase();
         let broadcastMsg = this._context.broadcastMsgs[key];
@@ -858,11 +862,11 @@ class RubyToBlocksConverter {
         return broadcastMsg;
     }
 
-    defaultBroadcastMsg () {
+    defaultBroadcastMsg() {
         return this._defaultBroadcastMsg();
     }
 
-    _defaultBroadcastMsg () {
+    _defaultBroadcastMsg() {
         const defaultName = 'message1';
         const keys = Object.keys(this._context.broadcastMsgs);
         if (keys.length === 0) {
@@ -874,12 +878,12 @@ class RubyToBlocksConverter {
         return this._context.broadcastMsgs[keys[0]];
     }
 
-    _lookupProcedure (name) {
+    _lookupProcedure(name) {
         name = name.toString();
         return this._context.procedures[name];
     }
 
-    _createProcedure (name) {
+    _createProcedure(name) {
         name = name.toString();
         let procedure = this._context.procedures[name];
         if (procedure) {
@@ -902,7 +906,7 @@ class RubyToBlocksConverter {
         return procedure;
     }
 
-    _getSource (node) {
+    _getSource(node) {
         const expression = node.$loc().$expression();
         if (expression === Opal.nil) {
             return '';
@@ -910,7 +914,7 @@ class RubyToBlocksConverter {
         return expression.$source().toString();
     }
 
-    _lastBlock (block) {
+    _lastBlock(block) {
         let b = block;
         while (b.next) {
             b = this._context.blocks[b.next];
@@ -918,7 +922,7 @@ class RubyToBlocksConverter {
         return b;
     }
 
-    _removeWaitBlocks (block) {
+    _removeWaitBlocks(block) {
         if (!block || block === Opal.nil) {
             return null;
         }
@@ -954,28 +958,28 @@ class RubyToBlocksConverter {
         return firstBlock;
     }
 
-    _getBlockType (block) {
+    _getBlockType(block) {
         if (this._isBlock(block)) {
             return this._context.blockTypes[block.id];
         }
         return 'primitive';
     }
 
-    _setBlockType (block, type) {
+    _setBlockType(block, type) {
         this._context.blockTypes[block.id] = type;
     }
 
-    _changeBlock (block, opcode, blockType) {
+    _changeBlock(block, opcode, blockType) {
         block.opcode = opcode;
         this._setBlockType(block, blockType);
         return block;
     }
 
-    changeRubyExpressionBlock (block, opcode, blockType) {
+    changeRubyExpressionBlock(block, opcode, blockType) {
         return this._changeRubyExpressionBlock(block, opcode, blockType);
     }
 
-    _changeRubyExpressionBlock (block, opcode, blockType) {
+    _changeRubyExpressionBlock(block, opcode, blockType) {
         this._changeBlock(block, opcode, blockType);
 
         delete this._context.blocks[block.inputs.EXPRESSION.block];
@@ -984,7 +988,7 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _changeToBooleanArgument (varName) {
+    _changeToBooleanArgument(varName) {
         varName = varName.toString();
         const variable = this._context.localVariables[varName];
         if (!variable) {
@@ -1003,14 +1007,14 @@ class RubyToBlocksConverter {
         return true;
     }
 
-    _setParent (block, parent) {
+    _setParent(block, parent) {
         if (this._isBlock(block)) {
             block.parent = parent.id;
             parent.next = block.id;
         }
     }
 
-    _matchRubyExpression (block, regexp) {
+    _matchRubyExpression(block, regexp) {
         if (!this._isBlock(block) || block.opcode !== 'ruby_expression') {
             return false;
         }
@@ -1018,7 +1022,7 @@ class RubyToBlocksConverter {
         return regexp.test(textBlock.fields.TEXT.value);
     }
 
-    _equalRubyExpression (block, expression) {
+    _equalRubyExpression(block, expression) {
         if (!this._isBlock(block) || block.opcode !== 'ruby_expression') {
             return false;
         }
@@ -1026,7 +1030,7 @@ class RubyToBlocksConverter {
         return expression.toString() === textBlock.fields.TEXT.value;
     }
 
-    _process (node) {
+    _process(node) {
         if (!node) {
             return null;
         }
@@ -1042,7 +1046,7 @@ class RubyToBlocksConverter {
         throw new RubyToBlocksConverterError(node, `not supported node type: ${node.type}`);
     }
 
-    _processStatement (node) {
+    _processStatement(node) {
         let blocks = this._process(node);
         if (!_.isArray(blocks)) {
             blocks = [blocks];
@@ -1054,7 +1058,7 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _processCondition (node) {
+    _processCondition(node) {
         let cond = this._process(node);
         if (_.isArray(cond) && cond.length === 1) {
             cond = cond[0];
@@ -1068,7 +1072,7 @@ class RubyToBlocksConverter {
         return cond;
     }
 
-    _onBegin (node) {
+    _onBegin(node) {
         const blocks = [];
         node.children.forEach(childNode => {
             const block = this._process(childNode);
@@ -1085,53 +1089,53 @@ class RubyToBlocksConverter {
         const result = [];
         blocks.forEach(block => {
             switch (this._getBlockType(block)) {
-            case 'statement':
-                if (prevBlock) {
-                    prevBlock.next = block.id;
-                    block.parent = prevBlock.id;
-                } else {
-                    result.push(block);
-                }
-                if (block.next) {
-                    const b = this._lastBlock(block);
-                    if (this._getBlockType(b) === 'statement') {
-                        prevBlock = b;
+                case 'statement':
+                    if (prevBlock) {
+                        prevBlock.next = block.id;
+                        block.parent = prevBlock.id;
                     } else {
-                        prevBlock = null;
+                        result.push(block);
                     }
-                } else {
-                    prevBlock = block;
-                }
-                break;
-            case 'terminate':
-                if (prevBlock) {
-                    prevBlock.next = block.id;
-                    block.parent = prevBlock.id;
-                } else {
+                    if (block.next) {
+                        const b = this._lastBlock(block);
+                        if (this._getBlockType(b) === 'statement') {
+                            prevBlock = b;
+                        } else {
+                            prevBlock = null;
+                        }
+                    } else {
+                        prevBlock = block;
+                    }
+                    break;
+                case 'terminate':
+                    if (prevBlock) {
+                        prevBlock.next = block.id;
+                        block.parent = prevBlock.id;
+                    } else {
+                        result.push(block);
+                    }
+                    prevBlock = null;
+                    break;
+                case 'value':
+                case 'value_boolean':
+                case 'value_variable':
+                case 'value_boolean_variable':
+                case 'hat':
+                case 'primitive':
                     result.push(block);
-                }
-                prevBlock = null;
-                break;
-            case 'value':
-            case 'value_boolean':
-            case 'value_variable':
-            case 'value_boolean_variable':
-            case 'hat':
-            case 'primitive':
-                result.push(block);
-                prevBlock = null;
+                    prevBlock = null;
             }
         });
         return result;
     }
 
-    _onBlock (node) {
+    _onBlock(node) {
         this._checkNumChildren(node, 3);
 
         return this._onSend(node.children[0], node.children[1], node.children[2]);
     }
 
-    _onSend (node, rubyBlockArgsNode, rubyBlockNode) {
+    _onSend(node, rubyBlockArgsNode, rubyBlockNode) {
         const saved = this._saveContext();
 
         let receiver = this._process(node.children[0]);
@@ -1158,11 +1162,11 @@ class RubyToBlocksConverter {
         if (!block) {
             if ((this._isSelf(receiver) || receiver === Opal.nil) && !rubyBlock) {
                 switch (name) {
-                case 'wait':
-                    if (args.length === 0) {
-                        block = this._createRubyStatementBlock('wait', node);
-                    }
-                    break;
+                    case 'wait':
+                        if (args.length === 0) {
+                            block = this._createRubyStatementBlock('wait', node);
+                        }
+                        break;
                 }
             }
         }
@@ -1183,57 +1187,57 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _onSelf (node) {
+    _onSelf(node) {
         return new Primitive('self', 'self', node);
     }
 
-    _onSym (node) {
+    _onSym(node) {
         this._checkNumChildren(node, 1);
 
         return new Primitive('sym', node.children[0].toString(), node);
     }
 
-    _onStr (node) {
+    _onStr(node) {
         this._checkNumChildren(node, 1);
 
         return new Primitive('str', node.children[0].toString(), node);
     }
 
-    _onInt (node) {
+    _onInt(node) {
         this._checkNumChildren(node, 1);
 
         return new Primitive('int', node.children[0], node);
     }
 
-    _onFloat (node) {
+    _onFloat(node) {
         this._checkNumChildren(node, 1);
 
         return new Primitive('float', node.children[0], node);
     }
 
-    _onTrue (node) {
+    _onTrue(node) {
         return new Primitive('true', true, node);
     }
 
-    _onFalse (node) {
+    _onFalse(node) {
         return new Primitive('false', true, node);
     }
 
-    _onArray (node) {
+    _onArray(node) {
         return new Primitive('array', node.children.map(childNode => this._process(childNode)), node);
     }
 
-    _onHash (node) {
+    _onHash(node) {
         return new Primitive('hash', new Map(node.children.map(childNode => this._process(childNode))), node);
     }
 
-    _onPair (node) {
+    _onPair(node) {
         this._checkNumChildren(node, 2);
 
         return node.children.map(childNode => this._process(childNode));
     }
 
-    _onIrange (node) {
+    _onIrange(node) {
         this._checkNumChildren(node, 2);
 
         const args = node.children.map(childNode => this._process(childNode));
@@ -1244,7 +1248,7 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _onErange (node) {
+    _onErange(node) {
         this._checkNumChildren(node, 2);
 
         const args = node.children.map(childNode => this._process(childNode));
@@ -1255,7 +1259,7 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _onConst (node) {
+    _onConst(node) {
         this._checkNumChildren(node, 2);
 
         const value = {
@@ -1265,17 +1269,17 @@ class RubyToBlocksConverter {
         return new Primitive('const', value, node);
     }
 
-    _onArgs (node) {
+    _onArgs(node) {
         return node.children.map(childNode => this._process(childNode));
     }
 
-    _onArg (node) {
+    _onArg(node) {
         this._checkNumChildren(node, 1);
 
         return node.children[0];
     }
 
-    _onIf (node) {
+    _onIf(node) {
         this._checkNumChildren(node, 3);
 
         const saved = this._saveContext();
@@ -1297,7 +1301,7 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _onUntil (node) {
+    _onUntil(node) {
         this._checkNumChildren(node, 2);
 
         const saved = this._saveContext();
@@ -1314,7 +1318,7 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _onOpAsgn (node) {
+    _onOpAsgn(node) {
         this._checkNumChildren(node, 3);
 
         const saved = this._saveContext();
@@ -1333,21 +1337,21 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _onAnd (node) {
+    _onAnd(node) {
         this._checkNumChildren(node, 2);
 
         const operands = node.children.map(childNode => this._processCondition(childNode));
         return this._callConvertersHandler('onAnd', operands);
     }
 
-    _onOr (node) {
+    _onOr(node) {
         this._checkNumChildren(node, 2);
 
         const operands = node.children.map(childNode => this._processCondition(childNode));
         return this._callConvertersHandler('onOr', operands);
     }
 
-    _onVar (node, scope) {
+    _onVar(node, scope) {
         this._checkNumChildren(node, 1);
 
         const variable = this._lookupOrCreateVariable(node.children[0]);
@@ -1359,15 +1363,15 @@ class RubyToBlocksConverter {
         return node.children[0].toString();
     }
 
-    _onGvar (node) {
+    _onGvar(node) {
         return this._onVar(node, 'global');
     }
 
-    _onIvar (node) {
+    _onIvar(node) {
         return this._onVar(node, 'instance');
     }
 
-    _onLvar (node) {
+    _onLvar(node) {
         this._checkNumChildren(node, 1);
 
         const varName = node.children[0].toString();
@@ -1382,7 +1386,7 @@ class RubyToBlocksConverter {
         return varName;
     }
 
-    _onVasgn (node, scope) {
+    _onVasgn(node, scope) {
         this._checkNumChildren(node, [1, 2]);
 
         if (node.children.length === 1) {
@@ -1403,19 +1407,19 @@ class RubyToBlocksConverter {
         return block;
     }
 
-    _onGvasgn (node) {
+    _onGvasgn(node) {
         return this._onVasgn(node, 'global');
     }
 
-    _onIvasgn (node) {
+    _onIvasgn(node) {
         return this._onVasgn(node, 'instance');
     }
 
-    _onLvasgn (node) {
+    _onLvasgn(node) {
         return this._onVasgn(node, 'local');
     }
 
-    _onDefs (node) {
+    _onDefs(node) {
         this._checkNumChildren(node, 4);
 
         const saved = this._saveContext();
