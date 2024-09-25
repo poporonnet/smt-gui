@@ -33,7 +33,7 @@ import MyBlocksConverter from './my-blocks';
 // import VideoConverter from './video';
 // import Text2SpeechConverter from './text2speech';
 import ToolsConverter from './tools';
-import Kanirobo2Converter from './kanirobo2';
+import Kanirobo2Converter from './kanirobo2_old';
 
 const messages = defineMessages({
     couldNotConvertPremitive: {
@@ -100,7 +100,8 @@ class RubyToBlocksConverter {
             // SensingConverter,
             OperatorsConverter,
             VariablesConverter,
-            MyBlocksConverter
+            MyBlocksConverter,
+            Kanirobo2Converter
         ];
         this._receiverToMethods = {};
         this.reset();
@@ -115,7 +116,7 @@ class RubyToBlocksConverter {
             // MicrobitMoreConverter,
             // MeshConverter,
             ToolsConverter,
-            Kanirobo2Converter
+            //Kanirobo2Converter
         ].forEach(x => x.register(this));
     }
 
@@ -288,6 +289,7 @@ class RubyToBlocksConverter {
             this.registerCallMethodWithBlock('stage', name, numArgs, numRubyBlockArgs, createBlockFunc);
             return;
         }
+
         let methodToNumArgs = this._receiverToMethods[receiverName];
         if (!methodToNumArgs) methodToNumArgs = this._receiverToMethods[receiverName] = {};
 
