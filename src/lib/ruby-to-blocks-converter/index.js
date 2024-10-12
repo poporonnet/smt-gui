@@ -33,7 +33,7 @@ import MyBlocksConverter from './my-blocks';
 // import VideoConverter from './video';
 // import Text2SpeechConverter from './text2speech';
 import ToolsConverter from './tools';
-import Kanirobo2Converter from './kanirobo2_old';
+import Kanirobo2Converter from './kanirobo2';
 
 const messages = defineMessages({
     couldNotConvertPremitive: {
@@ -116,7 +116,7 @@ class RubyToBlocksConverter {
             // MicrobitMoreConverter,
             // MeshConverter,
             ToolsConverter,
-            //Kanirobo2Converter
+            Kanirobo2Converter
         ].forEach(x => x.register(this));
     }
 

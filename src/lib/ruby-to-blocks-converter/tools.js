@@ -2,6 +2,7 @@ const Tools = 'tools'
 const Puts = 'puts'
 const ToolsConverter = {
     register: function (converter) {
+        console.error(converter)
         /*
         converter.registerCallMethod('self', Tools, 0, params => {
             const { node } = params;
