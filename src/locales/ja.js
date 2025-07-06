@@ -133,7 +133,7 @@ export default {
     "kanirobo1v2.motor": "モーター[TEXT1]を[TEXT2]方向にセット. スピード[TEXT3]%",
     "kanirobo1v2.value0": "ライトセンサー[TEXT]の値",
     "kanirobo1v2.command9": "サーボモーター[TEXT]を[NUM]度にする",
-//
+    //
     "kanirobo2.name": "蟹ロボ",
     "kanirobo2.Menu1.forward": "前",
     "kanirobo2.Menu1.backward": "後ろ",

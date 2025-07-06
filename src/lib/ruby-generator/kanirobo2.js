@@ -19,12 +19,12 @@ export default function (Generator) {
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
         return `motor${text} = GPIO.new(${text}, GPIO::OUT)\n`;
     };
-    
+
     Generator.kanirobo2_command3 = function (block) {
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
         return `motor${text}_pwm = PWM.new(${text}, ch=${text % 2})\n`;
     };
-    
+
     Generator.kanirobo2_command4 = function (block) {
         const text1 = Generator.valueToCode(block, 'TEXT1', Generator.ORDER_NONE) || null;
         const text2 = Generator.valueToCode(block, 'TEXT2', Generator.ORDER_NONE) || null;
@@ -65,8 +65,8 @@ export default function (Generator) {
     };
 
     Generator.kanirobo2_value1 = function (block) {
-        const num  = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE)  || 0;
-	      return [`( ${num}.to_f * (150 - 50) / 90.0 + 50).to_i`, Generator.ORDER_ATOMIC];
+        const num = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE) || 0;
+        return [`( ${num}.to_f * (150 - 50) / 90.0 + 50).to_i`, Generator.ORDER_ATOMIC];
     };
 
     // メニューについては Ruby 側でも定義が必要のようだ
@@ -98,6 +98,6 @@ export default function (Generator) {
         const menu6 = Generator.getFieldValue(block, 'menu6') || null;
         return [menu6, Generator.ORDER_ATOMIC];
     };
-    
+
     return Generator;
 }
