@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import {connect} from 'react-redux';
 import {compose} from 'redux';
-import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl';
+import {FormattedMessage, injectIntl, intlShape} from 'react-intl';
 import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
 import bowser from 'bowser';
@@ -79,7 +79,6 @@ import collectMetadata from '../../lib/collect-metadata';
 
 import styles from './menu-bar.css';
 
-import helpIcon from '../../lib/assets/icon--tutorials.svg';
 import mystuffIcon from './icon--mystuff.png';
 import profileIcon from './profile-hatti.png';
 import remixIcon from './icon--remix.svg';
@@ -688,7 +687,7 @@ class MenuBar extends React.Component {
                                                 onClick={() => {
                                                     this.handleClickShare(waitForUpdate);
                                                 }}
-                                                /* eslint-enable react/jsx-no-bind */
+                                            /* eslint-enable react/jsx-no-bind */
                                             />
                                         )
                                     }
@@ -715,7 +714,7 @@ class MenuBar extends React.Component {
                                                 onClick={() => {
                                                     this.handleClickSeeCommunity(waitForUpdate);
                                                 }}
-                                                /* eslint-enable react/jsx-no-bind */
+                                            /* eslint-enable react/jsx-no-bind */
                                             />
                                         )
                                     }
@@ -729,9 +728,13 @@ class MenuBar extends React.Component {
                     </div>
                     <Divider className={classNames(styles.divider)} />
                     <div className={styles.fileGroup}>
-                            <span><a href="https://www.shimane-oss.org/kani-robo/" target="_blank" rel="noopener noreferrer">
-				      <font color="white">🦀kani-robo</font>
-                            </a></span>
+                        <span><a
+                            href="https://www.shimane-oss.org/kani-robo/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <font color="white">{'🦀kani-robo'}</font>
+                        </a></span>
                     </div>
                 </div>
 
@@ -889,7 +892,6 @@ MenuBar.propTypes = {
     canShare: PropTypes.bool,
     className: PropTypes.string,
     confirmReadyToReplaceProject: PropTypes.func,
-    currentLocale: PropTypes.string.isRequired,
     editMenuOpen: PropTypes.bool,
     enableCommunity: PropTypes.bool,
     fileMenuOpen: PropTypes.bool,
@@ -902,10 +904,7 @@ MenuBar.propTypes = {
     locale: PropTypes.string.isRequired,
     loginMenuOpen: PropTypes.bool,
     logo: PropTypes.string,
-    mode1920: PropTypes.bool,
-    mode1990: PropTypes.bool,
     mode2020: PropTypes.bool,
-    mode220022BC: PropTypes.bool,
     modeMenuOpen: PropTypes.bool,
     modeNow: PropTypes.bool,
     onClickAbout: PropTypes.oneOfType([
@@ -930,7 +929,6 @@ MenuBar.propTypes = {
     onClickSettings: PropTypes.func,
     onLogOut: PropTypes.func,
     onOpenRegistration: PropTypes.func,
-    onOpenTipLibrary: PropTypes.func,
     onProjectTelemetryEvent: PropTypes.func,
     onRequestCloseAbout: PropTypes.func,
     onRequestCloseAccount: PropTypes.func,
@@ -944,7 +942,6 @@ MenuBar.propTypes = {
     onSetTimeTravelMode: PropTypes.func,
     onShare: PropTypes.func,
     onStartSelectingFileUpload: PropTypes.func,
-    onToggleLoginOpen: PropTypes.func,
     projectTitle: PropTypes.string,
     renderLogin: PropTypes.func,
     sessionExists: PropTypes.bool,
@@ -953,13 +950,12 @@ MenuBar.propTypes = {
     showComingSoon: PropTypes.bool,
     updateRubyCodeTargetState: PropTypes.func,
     username: PropTypes.string,
-    userOwnsProject: PropTypes.bool,
     vm: PropTypes.instanceOf(VM).isRequired
 };
 
 MenuBar.defaultProps = {
     logo: smalrubyLogo,
-    onShare: () => {}
+    onShare: () => { }
 };
 
 const mapStateToProps = (state, ownProps) => {
