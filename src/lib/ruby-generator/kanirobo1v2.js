@@ -6,22 +6,23 @@
 export default function (Generator) {
 
     Generator.kanirobo1v2_motor_init = function () {
-        return `motor1 = GPIO.new(25, GPIO::OUT)\n` +  `servo14.deinit\n`;
-	       `motor1_pwm = PWM.new(26, timer:1, channel:1)\n` +
-	       `motor2 = GPIO.new(32, GPIO::OUT)\n` +
- 	       `motor2_pwm = PWM.new(33, timer:1, channel:2)\n`;
+        return 'motor1 = GPIO.new(25, GPIO::OUT)\n' +
+            'servo14.deinit\n' +
+            'motor1_pwm = PWM.new(26, timer:1, channel:1)\n' +
+            'motor2 = GPIO.new(32, GPIO::OUT)\n' +
+            'motor2_pwm = PWM.new(33, timer:1, channel:2)\n';
     };
 
-    Generator.kanirobo1v2_lux_init = function (block) {
-	return `lux36 = ADC.new(36)\n` +
-	       `lux34 = ADC.new(34)\n` + 
-	       `lux35 = ADC.new(35)\n` + 
-  	       `lux2  = ADC.new(2)\n`;
+    Generator.kanirobo1v2_lux_init = function () {
+        return 'lux36 = ADC.new(36)\n' +
+           'lux34 = ADC.new(34)\n' +
+           'lux35 = ADC.new(35)\n' +
+           'lux2  = ADC.new(2)\n';
     };
 
-    Generator.kanirobo1v2_servo_init = function (block) {
-	return `servo27 = PWM.new(27, timer:2, channel:3, frequency:50)\n` +
-  	       `servo14 = PWM.new(14, timer:2, channel:4, frequency:50)\n`;
+    Generator.kanirobo1v2_servo_init = function () {
+        return 'servo27 = PWM.new(27, timer:2, channel:3, frequency:50)\n' +
+             'servo14 = PWM.new(14, timer:2, channel:4, frequency:50)\n';
     };
 
     Generator.kanirobo1v2_motor = function (block) {
@@ -36,14 +37,14 @@ export default function (Generator) {
     Generator.kanirobo1v2_value0 = function (block) {
         Generator.prepares_.lux = Generator.kanirobo1v2_lux_init(null);
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
-	return [`lux${text}.read_raw`, Generator.ORDER_ATOMIC];
+        return [`lux${text}.read_raw`, Generator.ORDER_ATOMIC];
     };
 
     Generator.kanirobo1v2_command9 = function (block) {
         Generator.prepares_.servo = Generator.kanirobo1v2_servo_init(null);
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
-        const num  = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE)  || 0;
-	return `servo${text}.pulse_width_us( ${num} )\n`;
+        const num = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE) || 0;
+        return `servo${text}.pulse_width_us( ${num} )\n`;
     };
 
     // メニューについては Ruby 側でも定義が必要のようだ
@@ -85,6 +86,6 @@ export default function (Generator) {
         const menu8 = Generator.getFieldValue(block, 'menu8') || null;
         return [menu8, Generator.ORDER_ATOMIC];
     };
-    
+
     return Generator;
 }

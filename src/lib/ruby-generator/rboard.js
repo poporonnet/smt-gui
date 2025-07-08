@@ -10,7 +10,7 @@ export default function (Generator) {
     };
 
     Generator.rboard_gpio_output = function (block) {
-        const num1  = Generator.getFieldValue(block, 'NUM1', Generator.ORDER_NONE);
+        const num1 = Generator.getFieldValue(block, 'NUM1', Generator.ORDER_NONE);
         const value = Generator.getFieldValue(block, 'VALUE', Generator.ORDER_NONE);
         return `led${num1}.write(${value})\n`;
     };
@@ -31,13 +31,13 @@ export default function (Generator) {
     };
 
     Generator.rboard_pwm_duty = function (block) {
-        const num1  = Generator.getFieldValue(block, 'NUM1', Generator.ORDER_NONE);
+        const num1 = Generator.getFieldValue(block, 'NUM1', Generator.ORDER_NONE);
         const value = Generator.valueToCode(block, 'VALUE', Generator.ORDER_NONE) || null;
         return `pwm${num1}.duty( ( ${value} % 1024 ).to_i )\n`;
     };
 
     Generator.rboard_pwm_frequency = function (block) {
-        const num1  = Generator.getFieldValue(block, 'NUM1', Generator.ORDER_NONE);
+        const num1 = Generator.getFieldValue(block, 'NUM1', Generator.ORDER_NONE);
         const value = Generator.valueToCode(block, 'VALUE', Generator.ORDER_NONE) || null;
         return `pwm${num1}.freq( ${value}.to_i )\n`;
     };
@@ -51,7 +51,7 @@ export default function (Generator) {
         const value = Generator.getFieldValue(block, 'VALUE', Generator.ORDER_NONE);
         return [`adc${value}.read`, Generator.ORDER_ATOMIC];
     };
-/*
+    /*
     Generator.rboard_i2c_init = function (block) {
         return `i2c = I2C.new()\n`;
     };
@@ -66,7 +66,7 @@ export default function (Generator) {
     Generator.rboard_i2c_read = function (block) {
         const num1 = Generator.valueToCode(block, 'NUM1', Generator.ORDER_NONE) || null;
         const num2 = Generator.valueToCode(block, 'NUM2', Generator.ORDER_NONE) || 1;
-	const num3 = Generator.valueToCode(block, 'NUM3', Generator.ORDER_NONE) || null;
+        const num3 = Generator.valueToCode(block, 'NUM3', Generator.ORDER_NONE) || null;
         return [`i2c.read( 0x${num1}, ${num2}, 0x${num3} )`, Generator.ORDER_ATOMIC];
     };
 
@@ -80,7 +80,7 @@ export default function (Generator) {
         return `uart.puts( ${text2} )\n`;
     };
 
-    Generator.rboard_uart_read = function (block) {
+    Generator.rboard_uart_read = function () {
         return [`uart.gets()`, Generator.ORDER_ATOMIC];
     };
 

@@ -12,7 +12,7 @@ import microcom1 from './smt/microcom1.png';
 import microcom2 from './smt/microcom2.png';
 import microcom3 from './smt/microcom3.png';
 import menu3InsetIconURL from './smt/microcom-small.png';
-import rboard from './smt/rboard.png'
+import rboard from './smt/rboard.png';
 import menu4InsetIconURL from './smt/rboard-small.png';
 
 const extensions = [

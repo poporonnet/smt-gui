@@ -13,7 +13,7 @@ export default function (Generator) {
 
     Generator.kanirobo2_command3 = function (block) {
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
-        return `pwm${text} = PWM.new( ${text}, timer:1, channel:${text % 2 + 1}, frequency:1000 )\n`;
+        return `pwm${text} = PWM.new( ${text}, timer:1, channel:${(text % 2) + 1}, frequency:1000 )\n`;
     };
 
     Generator.kanirobo2_command4 = function (block) {
@@ -40,7 +40,7 @@ export default function (Generator) {
 
     Generator.kanirobo2_command7 = function (block) {
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
-        const num = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE) || 0;	
+        const num = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE) || 0;
         return `pwm${text} = PWM.new( ${text}, timer:2, channel:${(text % 2) + 2}, frequency:(1000 / ${num}.to_i) )\n`;
     };
 

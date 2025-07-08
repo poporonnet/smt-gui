@@ -46,7 +46,7 @@ export default {
     "gui.menuBar.uploadToServer": "マイコンへ書き出し",
     "gui.menuBar.uploadToServerOld": "マイコンへ書き出し (旧版)",
     "gui.rboard.name": "RBoard",
-    "gui.rboard.description": "RBoard (GPIO, PWM, ADC, ...)",    
+    "gui.rboard.description": "RBoard (GPIO, PWM, ADC, ...)",
     // MBoard共通
     "mboard.sound_C": "ド",
     "mboard.sound_D": "レ",
@@ -189,7 +189,7 @@ export default {
     "rboard.adc_volt": "ADC: [VALUE] の値",
     "rboard.i2c_init": "I2C を使う",
     "rboard.i2c_write": "I2C 出力: アドレス 0x[NUM1], コマンド 0x[NUM2], 値 [NUM3]",
-    "rboard.i2c_read":  "I2C 入力: アドレス 0x[NUM1], バイト数 [NUM2], コマンド 0x[NUM3]",
+    "rboard.i2c_read": "I2C 入力: アドレス 0x[NUM1], バイト数 [NUM2], コマンド 0x[NUM3]",
     "rboard.uart_init": "UART を使う．通信速度 [NUM]",
     "rboard.uart_write": "出力: UART 出力: [TEXT2]",
     "rboard.uart_read": "入力: UART 入力",
