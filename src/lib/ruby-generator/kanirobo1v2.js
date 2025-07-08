@@ -6,22 +6,23 @@
 export default function (Generator) {
 
     Generator.kanirobo1v2_motor_init = function () {
-        return `motor1 = GPIO.new(25, GPIO::OUT)\n` + `servo14.deinit\n`;
-           `motor1_pwm = PWM.new(26, timer:1, channel:1)\n` +
-           `motor2 = GPIO.new(32, GPIO::OUT)\n` +
-            `motor2_pwm = PWM.new(33, timer:1, channel:2)\n`;
+        return 'motor1 = GPIO.new(25, GPIO::OUT)\n' +
+            'servo14.deinit\n' +
+            'motor1_pwm = PWM.new(26, timer:1, channel:1)\n' +
+            'motor2 = GPIO.new(32, GPIO::OUT)\n' +
+            'motor2_pwm = PWM.new(33, timer:1, channel:2)\n';
     };
 
-    Generator.kanirobo1v2_lux_init = function (block) {
-        return `lux36 = ADC.new(36)\n` +
-           `lux34 = ADC.new(34)\n` +
-           `lux35 = ADC.new(35)\n` +
-             `lux2  = ADC.new(2)\n`;
+    Generator.kanirobo1v2_lux_init = function () {
+        return 'lux36 = ADC.new(36)\n' +
+           'lux34 = ADC.new(34)\n' +
+           'lux35 = ADC.new(35)\n' +
+           'lux2  = ADC.new(2)\n';
     };
 
-    Generator.kanirobo1v2_servo_init = function (block) {
-        return `servo27 = PWM.new(27, timer:2, channel:3, frequency:50)\n` +
-             `servo14 = PWM.new(14, timer:2, channel:4, frequency:50)\n`;
+    Generator.kanirobo1v2_servo_init = function () {
+        return 'servo27 = PWM.new(27, timer:2, channel:3, frequency:50)\n' +
+             'servo14 = PWM.new(14, timer:2, channel:4, frequency:50)\n';
     };
 
     Generator.kanirobo1v2_motor = function (block) {

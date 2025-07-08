@@ -80,7 +80,7 @@ export default function (Generator) {
         return `uart.puts( ${text2} )\n`;
     };
 
-    Generator.rboard_uart_read = function (block) {
+    Generator.rboard_uart_read = function () {
         return [`uart.gets()`, Generator.ORDER_ATOMIC];
     };
 
