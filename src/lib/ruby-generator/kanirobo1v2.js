@@ -5,8 +5,8 @@
  */
 export default function (Generator) {
 
-    Generator.kanirobo1v2_motor_init = function (block) {
-        return `motor1 = GPIO.new(25, GPIO::OUT)\n` +
+    Generator.kanirobo1v2_motor_init = function () {
+        return `motor1 = GPIO.new(25, GPIO::OUT)\n` +  `servo14.deinit\n`;
 	       `motor1_pwm = PWM.new(26, timer:1, channel:1)\n` +
 	       `motor2 = GPIO.new(32, GPIO::OUT)\n` +
  	       `motor2_pwm = PWM.new(33, timer:1, channel:2)\n`;
@@ -23,9 +23,9 @@ export default function (Generator) {
 	return `servo27 = PWM.new(27, timer:2, channel:3, frequency:50)\n` +
   	       `servo14 = PWM.new(14, timer:2, channel:4, frequency:50)\n`;
     };
-    
+
     Generator.kanirobo1v2_motor = function (block) {
-	Generator.prepares_[`motor`] = Generator.kanirobo1v2_motor_init(null);
+        Generator.prepares_.motor = Generator.kanirobo1v2_motor_init(null);
         const text1 = Generator.valueToCode(block, 'TEXT1', Generator.ORDER_NONE) || null;
         const text2 = Generator.valueToCode(block, 'TEXT2', Generator.ORDER_NONE) || null;
         const text3 = Generator.valueToCode(block, 'TEXT3', Generator.ORDER_NONE) || null;
@@ -34,13 +34,13 @@ export default function (Generator) {
                `sleep( 0.01 )\n`;
     };
     Generator.kanirobo1v2_value0 = function (block) {
-	Generator.prepares_[`lux`] = Generator.kanirobo1v2_lux_init(null);
+        Generator.prepares_.lux = Generator.kanirobo1v2_lux_init(null);
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
 	return [`lux${text}.read_raw`, Generator.ORDER_ATOMIC];
     };
 
     Generator.kanirobo1v2_command9 = function (block) {
-	Generator.prepares_[`servo`] = Generator.kanirobo1v2_servo_init(null);
+        Generator.prepares_.servo = Generator.kanirobo1v2_servo_init(null);
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
         const num  = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE)  || 0;
 	return `servo${text}.pulse_width_us( ${num} )\n`;
@@ -75,12 +75,12 @@ export default function (Generator) {
         const menu6 = Generator.getFieldValue(block, 'menu6') || null;
         return [menu6, Generator.ORDER_ATOMIC];
     };
-    
+
     Generator.kanirobo1v2_menu_menu7 = function (block){
         const menu7 = Generator.getFieldValue(block, 'menu7') || null;
         return [menu7, Generator.ORDER_ATOMIC];
     };
-    
+
     Generator.kanirobo1v2_menu_menu8 = function (block){
         const menu8 = Generator.getFieldValue(block, 'menu8') || null;
         return [menu8, Generator.ORDER_ATOMIC];

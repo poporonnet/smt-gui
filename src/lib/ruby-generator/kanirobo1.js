@@ -32,7 +32,7 @@ export default function (Generator) {
             `servo27.deinit\n` +
             `servo14.deinit\n`;
     };
-    
+
     Generator.kanirobo1_motor = function (block) {
         Generator.prepares_.motor = Generator.kanirobo1_motor_init(null);
         const text1 = Generator.valueToCode(block, 'TEXT1', Generator.ORDER_NONE) || null;
@@ -51,8 +51,8 @@ export default function (Generator) {
     Generator.kanirobo1_command9 = function (block) {
         Generator.prepares_.servo = Generator.kanirobo1_servo_init(null);
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
-        const num  = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE)  || 0;
-	      return  `deg = ( ( ${num}.to_f * (150 - 50) / 90.0 + 50).to_i ) \n`+
+        const num = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE) || 0;
+        return `deg = ( ( ${num}.to_f * (150 - 50) / 90.0 + 50).to_i ) \n` +
                `servo${text}.duty( ( deg % 1024 ).to_i )\n` +
             `sleep 0.1\n` +
             `servo${text}.deinit\n`;
@@ -87,11 +87,11 @@ export default function (Generator) {
         const menu6 = Generator.getFieldValue(block, 'menu6') || null;
         return [menu6, Generator.ORDER_ATOMIC];
     };
-    
+
     Generator.kanirobo1_menu_menu7 = function (block){
         const menu7 = Generator.getFieldValue(block, 'menu7') || null;
         return [menu7, Generator.ORDER_ATOMIC];
     };
-    
+
     return Generator;
 }
