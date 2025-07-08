@@ -40,7 +40,7 @@ export default function (Generator) {
 
     Generator.kanirobo2_command7 = function (block) {
         const text = Generator.valueToCode(block, 'TEXT', Generator.ORDER_NONE) || null;
-        const num = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE) || 0;	
+        const num = Generator.valueToCode(block, 'NUM', Generator.ORDER_NONE) || 0;
         return `pwm${text} = PWM.new( ${text}, timer:2, channel:${(text % 2) + 2}, frequency:(1000 / ${num}.to_i) )\n`;
     };
 
